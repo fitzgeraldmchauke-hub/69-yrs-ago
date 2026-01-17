@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TV Projector Prototype</title>
+<style>
+  body { font-family: sans-serif; text-align: center; background: #222; color: #fff; padding: 50px; }
+  button { padding: 15px 30px; font-size: 1.2rem; margin: 20px; cursor: pointer; border-radius: 10px; border: none; background: #66a6ff; color: white; }
+  video { width: 80%; max-width: 800px; margin-top: 20px; border: 3px solid #66a6ff; border-radius: 10px; }
+  #qrContainer canvas { margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>TV Projector Prototype</h1>
+
+<div id="tvSection">
+  <p>TV Screen: Show this page on your TV</p>
+  <div id="qrContainer"></div>
+  <video id="tvScreen" autoplay></video>
+</div>
+
+<div id="chromebookSection" style="display:none;">
+  <p>Chromebook: Scan the QR code and click Share Screen</p>
+  <button id="shareScreen">Share Screen</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const isTV = !urlParams.get('chromebook'); // TV page if ?chromebook not present
+
+const qrContainer = document.getElementById('qrContainer');
+const chromebookSection = document.getElementById('chromebookSection');
+const tvScreen = document.getElementById('tvScreen');
+const shareBtn = document.getElementById('shareScreen');
+
+if (isTV) {
+  // TV generates QR code linking to Chromebook page
+  const link = window.location.href + '?chromebook=1';
+  QRCode.toCanvas(link, { width: 200 }, function (error, canvas) {
+    if (error) console.error(error);
+    qrContainer.innerHTML = "<p>Scan this QR code with your Chromebook to project your screen!</p>";
+    qrContainer.appendChild(canvas);
+  });
+} else {
+  // Chromebook page shows Share Screen button
+  chromebookSection.style.display = 'block';
+
+  shareBtn.onclick = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      tvScreen.srcObject = stream;
+      alert("Your screen is now projected! 🎉");
+    } catch (err) {
+      alert('Screen sharing cancelled or failed: ' + err);
+    }
+  };
+}
+</script>
+
+</body>
+</html>
+
+</body>
+</html>
