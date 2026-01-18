@@ -103,8 +103,6 @@
     }
 
     .qr-container {
-      background-color: #FFFFFF;
-      border: 3px solid var(--primary-color);
       border-radius: 16px;
       padding: 24px;
       text-align: center;
@@ -114,13 +112,7 @@
     .qr-container img {
       width: 200px;
       height: 200px;
-    }
-
-    .qr-code-text {
-      font-family: monospace;
-      margin-top: 8px;
-      font-size: 12px;
-      color: #666;
+      object-fit: contain;
     }
 
     .action-button {
@@ -212,8 +204,7 @@
       <button onclick="goBack()" style="align-self:flex-start;margin-bottom:16px;">&larr; Back</button>
       <div class="title">Receiver Mode</div>
       <div class="qr-container">
-        <img src="/mnt/data/e3c89b1d-151b-4886-9b82-f0b6506b6bd1.png" alt="QR Code">
-        <div class="qr-code-text" id="receiver-qr">screenshare://connect?id=TV-ABC123XYZ</div>
+        <img src="image.png" alt="QR Code">
       </div>
       <div class="connected" id="receiver-connected">Waiting for device to connect...</div>
     </div>
