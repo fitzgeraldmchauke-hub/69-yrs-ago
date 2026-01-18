@@ -1,71 +1,57 @@
-
-<!DOCTYPE html>
-<html>
-<body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TV Projector Prototype</title>
+<title>Code to HTML Translator</title>
 <style>
-  body { font-family: sans-serif; text-align: center; background: #222; color: #fff; padding: 50px; }
-  button { padding: 15px 30px; font-size: 1.2rem; margin: 20px; cursor: pointer; border-radius: 10px; border: none; background: #66a6ff; color: white; }
-  video { width: 80%; max-width: 800px; margin-top: 20px; border: 3px solid #66a6ff; border-radius: 10px; }
-  #qrContainer canvas { margin-top: 20px; }
+  body { background: #1f1f2e; color: #fff; font-family: monospace; margin: 0; padding: 20px; }
+  textarea { width: 100%; height: 250px; background: #2c2c44; color: #fff; border: none; border-radius: 5px; padding: 10px; margin-bottom: 10px; font-family: monospace; }
+  button { padding: 10px 20px; background: #4e9af1; border: none; border-radius: 5px; cursor: pointer; color: #fff; }
+  pre { background: #2c2c44; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  h1 { text-align: center; font-weight: 400; margin-bottom: 20px; }
 </style>
 </head>
 <body>
 
-<h1>TV Projector Prototype</h1>
+<h1>Universal Code → HTML Translator</h1>
 
-<div id="tvSection">
-  <p>TV Screen: Show this page on your TV</p>
-  <div id="qrContainer"></div>
-  <video id="tvScreen" autoplay></video>
-</div>
+<textarea id="input" placeholder="Paste your code here..."></textarea>
+<br>
+<button onclick="translateCode()">Generate HTML</button>
 
-<div id="chromebookSection" style="display:none;">
-  <p>Chromebook: Scan the QR code and click Share Screen</p>
-  <button id="shareScreen">Share Screen</button>
-</div>
+<h2>Generated HTML:</h2>
+<pre id="output"></pre>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-const isTV = !urlParams.get('chromebook'); // TV page if ?chromebook not present
+function translateCode() {
+  const code = document.getElementById('input').value;
 
-const qrContainer = document.getElementById('qrContainer');
-const chromebookSection = document.getElementById('chromebookSection');
-const tvScreen = document.getElementById('tvScreen');
-const shareBtn = document.getElementById('shareScreen');
+  // Wrap code in HTML template with JS & CSS scaffolding
+  const htmlTemplate = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generated Page</title>
+  <style>
+    /* Add your CSS here */
+    body { background: #1A1A1A; color: #FFFFFF; font-family: monospace; padding: 20px; }
+  </style>
+</head>
+<body>
+  <pre id="app">
+${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+  </pre>
 
-if (isTV) {
-  // TV generates QR code linking to Chromebook page
-  const link = window.location.href + '?chromebook=1';
-  QRCode.toCanvas(link, { width: 200 }, function (error, canvas) {
-    if (error) console.error(error);
-    qrContainer.innerHTML = "<p>Scan this QR code with your Chromebook to project your screen!</p>";
-    qrContainer.appendChild(canvas);
-  });
-} else {
-  // Chromebook page shows Share Screen button
-  chromebookSection.style.display = 'block';
+  <script>
+    // Add your JS here
+    console.log("Code loaded!");
+  </script>
+</body>
+</html>`;
 
-  shareBtn.onclick = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-      tvScreen.srcObject = stream;
-      alert("Your screen is now projected! 🎉");
-    } catch (err) {
-      alert('Screen sharing cancelled or failed: ' + err);
-    }
-  };
+  document.getElementById('output').textContent = htmlTemplate;
 }
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
