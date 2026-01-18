@@ -1,57 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Code to HTML Translator</title>
-<style>
-  body { background: #1f1f2e; color: #fff; font-family: monospace; margin: 0; padding: 20px; }
-  textarea { width: 100%; height: 250px; background: #2c2c44; color: #fff; border: none; border-radius: 5px; padding: 10px; margin-bottom: 10px; font-family: monospace; }
-  button { padding: 10px 20px; background: #4e9af1; border: none; border-radius: 5px; cursor: pointer; color: #fff; }
-  pre { background: #2c2c44; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
-  h1 { text-align: center; font-weight: 400; margin-bottom: 20px; }
-</style>
-</head>
-<body>
-
-<h1>Universal Code → HTML Translator</h1>
-
-<textarea id="input" placeholder="Paste your code here..."></textarea>
-<br>
-<button onclick="translateCode()">Generate HTML</button>
-
-<h2>Generated HTML:</h2>
-<pre id="output"></pre>
-
-<script>
-function translateCode() {
-  const code = document.getElementById('input').value;
-
-  // Wrap code in HTML template with JS & CSS scaffolding
-  const htmlTemplate = `<!DOCTYPE html>
-<html lang="en">
-<head>
   <meta charset="UTF-8">
-  <title>Generated Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScreenShare Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    /* Add your CSS here */
-    body { background: #1A1A1A; color: #FFFFFF; font-family: monospace; padding: 20px; }
+    :root {
+      --primary-color: #66A6FF;
+      --accent-color: #5B9BD5;
+      --background-color: #1A1A1A;
+      --card-color: #2D2D2D;
+      --text-primary: #FFFFFF;
+      --text-secondary: #B0B0B0;
+      --success-color: #10B981;
+      --error-color: #EF4444;
+      --warning-color: #F59E0B;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .tab-bar {
+      display: flex;
+      justify-content: space-around;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: var(--card-color);
+      border-top: 1px solid #404040;
+      padding: 10px 0;
+    }
+
+    .tab-bar button {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .tab-bar button.active {
+      color: var(--primary-color);
+    }
+
+    .screen {
+      flex: 1;
+      padding: 24px;
+      padding-bottom: 100px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .mode-card {
+      background-color: var(--card-color);
+      border: 2px solid #404040;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+      cursor: pointer;
+      width: 250px;
+    }
+
+    .mode-card:hover {
+      border-color: var(--primary-color);
+    }
+
+    .mode-card .material-icons {
+      font-size: 40px;
+      margin-bottom: 12px;
+      color: var(--primary-color);
+    }
+
+    .qr-container {
+      background-color: #FFFFFF;
+      border: 3px solid var(--primary-color);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin: 24px 0;
+    }
+
+    .qr-container img {
+      width: 200px;
+      height: 200px;
+    }
+
+    .qr-code-text {
+      font-family: monospace;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .action-button {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .action-button .material-icons {
+      margin-right: 8px;
+    }
+
+    .stop-button {
+      background-color: var(--error-color);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .connected {
+      color: var(--success-color);
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .settings-card {
+      background-color: var(--card-color);
+      border: 1px solid #404040;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .settings-card .material-icons {
+      font-size: 32px;
+      margin-right: 16px;
+      color: var(--primary-color);
+    }
+
+    .settings-content {
+      flex: 1;
+    }
+
+    .settings-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .settings-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
   </style>
 </head>
 <body>
-  <pre id="app">
-${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
-  </pre>
+  <div class="container">
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen active">
+      <div class="title">ScreenShare Hub</div>
+      <div class="subtitle">Choose your sharing mode</div>
+      <div class="mode-card" id="receiver-mode">
+        <span class="material-icons">tv</span>
+        <div>Receiver Mode</div>
+        <div style="font-size:12px;color:var(--text-secondary);">Display this on your TV to receive screen casts</div>
+      </div>
+      <div class="mode-card" id="caster-mode">
+        <span class="material-icons">smartphone</span>
+        <div>Caster Mode</div>
+        <div style="font-size:12px;color:var(--text-secondary);">Cast your screen to a connected TV</div>
+      </div>
+    </div>
+
+    <!-- Receiver Screen -->
+    <div id="receiver-screen" class="screen">
+      <button onclick="goBack()" style="align-self:flex-start;margin-bottom:16px;">&larr; Back</button>
+      <div class="title">Receiver Mode</div>
+      <div class="qr-container">
+        <img src="/mnt/data/e3c89b1d-151b-4886-9b82-f0b6506b6bd1.png" alt="QR Code">
+        <div class="qr-code-text" id="receiver-qr">screenshare://connect?id=TV-ABC123XYZ</div>
+      </div>
+      <div class="connected" id="receiver-connected">Waiting for device to connect...</div>
+    </div>
+
+    <!-- Caster Screen -->
+    <div id="caster-screen" class="screen">
+      <button onclick="goBack()" style="align-self:flex-start;margin-bottom:16px;">&larr; Back</button>
+      <div class="title">Caster Mode</div>
+      <button class="action-button" id="scan-qr">
+        <span class="material-icons">qr_code_scanner</span> Scan QR Code
+      </button>
+      <div class="connected" id="caster-connected" style="display:none;">Connected to TV!</div>
+      <button class="stop-button" id="stop-sharing" style="display:none;">
+        <span class="material-icons">stop</span> Stop Sharing
+      </button>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen">
+      <div class="title">Settings</div>
+      <div id="settings-list"></div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button id="tab-home" class="active"><span class="material-icons">cast</span></button>
+      <button id="tab-settings"><span class="material-icons">settings</span></button>
+    </div>
+  </div>
 
   <script>
-    // Add your JS here
-    console.log("Code loaded!");
+    // Tab navigation
+    const homeScreen = document.getElementById('home-screen');
+    const settingsScreen = document.getElementById('settings-screen');
+    const receiverScreen = document.getElementById('receiver-screen');
+    const casterScreen = document.getElementById('caster-screen');
+
+    document.getElementById('tab-home').addEventListener('click', () => {
+      showScreen(homeScreen);
+      setActiveTab('tab-home');
+    });
+
+    document.getElementById('tab-settings').addEventListener('click', () => {
+      showScreen(settingsScreen);
+      setActiveTab('tab-settings');
+    });
+
+    function showScreen(screen) {
+      [homeScreen, receiverScreen, casterScreen, settingsScreen].forEach(s => s.classList.remove('active'));
+      screen.classList.add('active');
+    }
+
+    function setActiveTab(tabId) {
+      document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // Home mode selection
+    document.getElementById('receiver-mode').addEventListener('click', () => {
+      showScreen(receiverScreen);
+    });
+
+    document.getElementById('caster-mode').addEventListener('click', () => {
+      showScreen(casterScreen);
+    });
+
+    // Go back
+    function goBack() {
+      showScreen(homeScreen);
+    }
+
+    // Caster mode actions
+    const scanBtn = document.getElementById('scan-qr');
+    const casterConnected = document.getElementById('caster-connected');
+    const stopBtn = document.getElementById('stop-sharing');
+
+    scanBtn.addEventListener('click', () => {
+      casterConnected.style.display = 'block';
+      stopBtn.style.display = 'block';
+      scanBtn.style.display = 'none';
+      alert('QR Code scanned successfully! Ready to share screen.');
+    });
+
+    stopBtn.addEventListener('click', () => {
+      casterConnected.style.display = 'none';
+      stopBtn.style.display = 'none';
+      scanBtn.style.display = 'block';
+      alert('Screen sharing stopped.');
+    });
+
+    // Settings list
+    const settingsOptions = [
+      { icon: 'cast', title: 'Connection Settings', description: 'Manage device connections and pairing' },
+      { icon: 'video_settings', title: 'Video Quality', description: 'Adjust streaming quality and performance' },
+      { icon: 'security', title: 'Privacy & Security', description: 'Control sharing permissions and security' },
+      { icon: 'info', title: 'About', description: 'Version 1.0.0 - ScreenShare Hub' }
+    ];
+
+    const settingsList = document.getElementById('settings-list');
+    settingsOptions.forEach(opt => {
+      const card = document.createElement('div');
+      card.className = 'settings-card';
+      card.innerHTML = `<span class='material-icons'>${opt.icon}</span><div class='settings-content'><div class='settings-title'>${opt.title}</div><div class='settings-description'>${opt.description}</div></div><span class='material-icons'>chevron_right</span>`;
+      card.addEventListener('click', () => alert(opt.title + ' clicked'));
+      settingsList.appendChild(card);
+    });
   </script>
-</body>
-</html>`;
-
-  document.getElementById('output').textContent = htmlTemplate;
-}
-</script>
-
 </body>
 </html>
