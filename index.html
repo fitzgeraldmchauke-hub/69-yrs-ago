@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ScreenShare Hub</title>
+  <link rel="icon" href="favi.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -201,7 +202,9 @@
 
     <!-- Receiver Screen -->
     <div id="receiver-screen" class="screen">
-      <button onclick="goBack()" style="align-self:flex-start;margin-bottom:16px;">&larr; Back</button>
+      <button class="action-button" onclick="goBack()">
+        <span class="material-icons">arrow_back</span> Back
+      </button>
       <div class="title">Receiver Mode</div>
       <div class="qr-container">
         <img src="image.png" alt="QR Code">
@@ -211,7 +214,9 @@
 
     <!-- Caster Screen -->
     <div id="caster-screen" class="screen">
-      <button onclick="goBack()" style="align-self:flex-start;margin-bottom:16px;">&larr; Back</button>
+      <button class="action-button" onclick="goBack()">
+        <span class="material-icons">arrow_back</span> Back
+      </button>
       <div class="title">Caster Mode</div>
       <button class="action-button" id="scan-qr">
         <span class="material-icons">qr_code_scanner</span> Scan QR Code
